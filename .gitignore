@@ -1,5 +1,10 @@
-*.smr
+# =========================
+# Custom ignores
+# =========================
 test_data/
+nbproject/
+build/
+build.xml
 
 *.class
 
