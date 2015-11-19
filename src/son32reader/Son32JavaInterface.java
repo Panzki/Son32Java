@@ -7,6 +7,7 @@ package son32reader;
 
 import com.sun.jna.Library;
 import com.sun.jna.Native;
+import com.sun.jna.NativeLong;
 
 /**
  *This interface represents the "map" between the son32.cll (c code) and the
@@ -57,4 +58,22 @@ public interface Son32JavaInterface extends Library{
      * @return The base time unit of the .smr file.
      */
     double SONTimeBase(short fh, double dTB);
+
+    /**
+     * This function returns the file clock tick interval in base time units as defined by 
+     * SONTimeBase()
+     * @param fh File descriptor for the .smr file.
+     * @return The number of base time units in the clock tick interval.
+     */
+    short SONGetusPerTime(short fh);
+    
+    /**
+     * Returns  the interval, in clock ticks, between waveform conversions on
+     * this channel. If this is not a waveform channel, then the return 
+     * value is 1. 
+     * @param fh The file descriptor for the .smr file
+     * @param chan The number of the channel (counting starts with 0). 
+     * @return Interval for waveform conversion in clock ticks.
+     */
+    NativeLong SONChanDivide(short fh, short chan);
 }

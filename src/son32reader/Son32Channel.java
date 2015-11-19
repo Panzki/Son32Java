@@ -77,10 +77,14 @@ public class Son32Channel {
         }
     }
     
+    private final Son32Reader parentReader;
     private final ChannelKind channelKind;
+    private final long channelDivide;
     
-    public Son32Channel(short channelKind){
+    public Son32Channel(Son32Reader reader, short channelKind, long chanDiv){
+        this.parentReader = reader;
         this.channelKind = ChannelKind.getByChannelCode(channelKind);
+        this.channelDivide = chanDiv;
     }
     
     /**
@@ -89,5 +93,12 @@ public class Son32Channel {
      */
     public ChannelKind getChannelKind(){
         return this.channelKind;
+    }
+    
+    /**
+     * @return The cannel divide value.
+     */
+    public long getChannelDivide(){
+        return this.channelDivide;
     }
 }

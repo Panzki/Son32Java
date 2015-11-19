@@ -6,7 +6,7 @@
 package son32Tests;
 
 import son32reader.Son32Reader;
-import son32reader.Son32Channel;
+import son32Exceptions.*;
 
 /**
  * Atm, this is the place for simple manual unit and implemenation test.
@@ -20,14 +20,13 @@ public class Son32Test {
         Son32Reader reader = new Son32Reader(path, 1);
     }
     
-//    public static void printAllChannleKinds(Son32Reader reader){
-//        int maxChans = reader.SONMaxChans();
-//        Son32Channel[] channels = new Son32Channel[maxChans];
-//        for(short i=0;i<maxChans;i++){
-//            channels[i] = new Son32Channel(reader.SONChanKind(i));
-//            short channelCode = channels[i].getChannelKind().getChannelCode();
-//            String channelDes = channels[i].getChannelKind().getChannelKindDescription();
-//            System.out.println("Channel: "+(i+1)+" Type: "+channelDes+" TypeNumber: "+channelCode);
-//        }
-//    }
+    public static void printAllChannleKinds(Son32Reader reader){
+        try{
+            for(int i=0;i<reader.getNumberOfChannels();i++){
+                System.out.println("Channel " + i + ": " + reader.getChannel(i).getChannelKind());
+            }
+        } catch(NoChannelException ex){
+            System.out.println(ex);
+        }
+    }
 }
