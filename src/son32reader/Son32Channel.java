@@ -78,13 +78,18 @@ public class Son32Channel {
     }
     
     private final Son32Reader parentReader;
+    private final int channelNumber;
     private final ChannelKind channelKind;
     private final long channelDivide;
+    private final long chanMaxTime;
     
-    public Son32Channel(Son32Reader reader, short channelKind, long chanDiv){
+    public Son32Channel(Son32Reader reader, int channelNumber,
+            short channelKind, long chanDiv, long chanMaxTime){
         this.parentReader = reader;
+        this.channelNumber = channelNumber;
         this.channelKind = ChannelKind.getByChannelCode(channelKind);
         this.channelDivide = chanDiv;
+        this.chanMaxTime = chanMaxTime;
     }
     
     /**
@@ -100,5 +105,26 @@ public class Son32Channel {
      */
     public long getChannelDivide(){
         return this.channelDivide;
+    }
+    
+    /**
+    * This function reads contiguous waveform data from this channel 
+     * between two set times.
+     * @param max The maximum number of data point to be returned
+     * @param sTime The strat time in clock ticks.
+     * @param eTime The end time in clock ticks.
+     * @return A 2d double array where [0][n] represents the x value (time)
+     *         and [1][n] represents the y value (data) of the nth data point.
+     */
+    public double[][] getRealData(long max, long sTime, long eTime){
+        return this.parentReader.SONGetRealData((short)this.channelNumber, max,
+                sTime, eTime);
+    }
+    
+    /**
+     * @return The max time for this channel.
+     */
+    public long getChanMaxTime(){
+        return this.chanMaxTime;
     }
 }

@@ -6,6 +6,7 @@
 package son32Tests;
 
 import son32reader.Son32Reader;
+import son32reader.Son32Channel;
 import son32Exceptions.*;
 
 /**
@@ -15,9 +16,12 @@ import son32Exceptions.*;
  */
 public class Son32Test {
     public static void main(String args[]){
-        //String path = "C:\\Users\\matthias\\Documents\\NetBeansProjects\\Son32Reader\\test_data\\sample.smr";
-        String path = "C:\\Users\\matthias\\Documents\\NetBeansProjects\\Son32Reader\\test_data\\chan1_1sec.smr";
+        String path = "C:\\Users\\matthias\\Documents\\NetBeansProjects\\Son32Reader\\test_data\\sample.smr";
+        //String path = "C:\\Users\\matthias\\Documents\\NetBeansProjects\\Son32Reader\\test_data\\chan1_1sec.smr";
         Son32Reader reader = new Son32Reader(path, 1);
+        long   duration = timeEpochLoading(reader);
+  
+        System.out.format("It took on average %d ms to fetch ~30sec of data.%n",duration);
     }
     
     public static void printAllChannleKinds(Son32Reader reader){
@@ -27,6 +31,34 @@ public class Son32Test {
             }
         } catch(NoChannelException ex){
             System.out.println(ex);
+        }
+    }
+    
+    public static void printChannelData(double[][] data){
+        for(int i=0;i<data[0].length;i++){
+            double time = data[0][i];
+            double val = data[1][i];
+            System.out.format("%.6f  %.6f%n",time,val);
+        }
+    }
+    
+    public static long timeEpochLoading(Son32Reader reader){
+        try{
+            Son32Channel channel = reader.getChannel(0);
+            long sTime = System.nanoTime();
+            //one waveform conversion takes about 0.004915s for this test file
+            //the fetch ~30s we need to get 6106 data points
+            //double[][] channel0Data = channel.getRealData(6106,0,channel.getChanMaxTime());
+            double[][] channel0Data = channel.getRealData(6106,0,30*37000);
+            long eTime = System.nanoTime();
+            long duration = (eTime - sTime)/1000000;
+            //printChannelData(channel0Data);
+            return duration;
+            //System.out.format("It took %d ms to fetch ~30sec of data.%n",duration);
+        } catch(NoChannelException ex){
+            System.out.println(ex);
+            System.exit(1);
+            return 0;
         }
     }
 }

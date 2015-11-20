@@ -7,6 +7,7 @@ package son32reader;
 
 import com.sun.jna.Library;
 import com.sun.jna.Native;
+import com.sun.jna.Memory;
 import com.sun.jna.NativeLong;
 
 /**
@@ -41,16 +42,6 @@ public interface Son32JavaInterface extends Library{
     int SONMaxChans(short fh);
     
     /**
-     * Returns the kind of the given chanel as a short. The mapping between the
-     * short value and the string description of the chanel takes place in a 
-     * separate enum.
-     * @param fh The file handle to the .smr file.
-     * @param chan The number of the channel (counting starts with 0).
-     * @return The code for the channel kind
-     */
-    short SONChanKind(short fh, short chan);
-    
-    /**
      *  This function gets and/or sets the base time units for the file (default
      * is 1.0E-6 seconds).
      * @param fh The file handle to the .smr file
@@ -76,4 +67,39 @@ public interface Son32JavaInterface extends Library{
      * @return Interval for waveform conversion in clock ticks.
      */
     NativeLong SONChanDivide(short fh, short chan);
+    
+    /**
+     * Returns the kind of the given chanel as a short. The mapping between the
+     * short value and the string description of the chanel takes place in a 
+     * separate enum.
+     * @param fh The file handle to the .smr file.
+     * @param chan The number of the channel (counting starts with 0).
+     * @return The code for the channel kind
+     */
+    short SONChanKind(short fh, short chan);
+    
+    /**
+     * Returns the last time value for this channel in clock ticks.
+     * @param fh The file descriptor for the .smr file
+     * @param chan The number of the channel (counting starts with 0). 
+     * @return The last time value for the channel.
+     */
+    NativeLong SONChanMaxTime(short fh, int chan); 
+    
+    /**
+     * This function reads contiguous waveform data from the given channel 
+     * between two set times.
+     * @param fh The file descriptor for the .smr file
+     * @param chan The number of the channel (counting starts with 0). 
+     * @param pFloat Points to the area of memory in which any data 
+     *               found is to be returned.
+     * @param max The max number of data point that may be returned.
+     * @param sTime The strat time in clock ticks.
+     * @param eTime The end time in clock ticks.
+     * @param pbTime The time of the first returned data point in clock ticks.
+     * @param pFltMask Filter for AdcMark channels, ignored if null.
+     * @return The number of returned data points.
+     */
+    NativeLong SONGetRealData(short fh, short chan, Memory pFloat, NativeLong max,
+                NativeLong sTime, NativeLong eTime, Memory pbTime, Memory pFltMask);
 }

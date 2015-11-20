@@ -7,6 +7,10 @@ package son32reader;
 
 import son32Exceptions.*;
 
+import com.sun.jna.Memory;
+import com.sun.jna.NativeLong;
+
+
 /**
  * This class will contain an instance of the Son32JavaInterface, which contains
  * all the son32.dll functions in abstract form. The interface maps the function
@@ -50,7 +54,9 @@ public final class Son32Reader {
         for(int i=0;i<this.numberOfChannels;i++){
             short chanKind = this.SONChanKind((short)i);
             long chanDiv = this.SONChanDivide(this.fileHandle, (short)i);
-            this.channels[i] = new Son32Channel(this, chanKind, chanDiv);
+            long chanMaxTime = this.SONChanMaxTime(this.fileHandle,(short) i);
+            this.channels[i] = new Son32Channel(this, i, chanKind, chanDiv,
+                    chanMaxTime);
         }
     }
     
@@ -86,6 +92,25 @@ public final class Son32Reader {
     }
     
     /**
+     * Returns the base time unit of the .smr file.
+     * @param newTimeBase Sets a new time base, ignored if <= 0.9
+     * @return The time base unit of the .smr file.
+     */
+    private double SONTimeBase(double newTimeBase){
+        return INSTANCE.SONTimeBase(this.fileHandle, newTimeBase);
+    }
+    
+    /**
+     * This function returns the file clock tick interval in base time units as defined by 
+     * SONTimeBase()
+     * @param fh File descriptor for the .smr file.
+     * @return The number of base time units in the clock tick interval.
+     */
+    private short SONGetusPerTime(short fh){
+        return INSTANCE.SONGetusPerTime(fh);
+    }
+    
+    /**
      * Returns the chanel kind for the given chanel, of this .smr file.
      * @param chan The channel number (counting starts with 0).
      * @return The channel kind code for the channel. 
@@ -109,23 +134,56 @@ public final class Son32Reader {
     }
     
     /**
-     * Returns the base time unit of the .smr file.
-     * @param newTimeBase Sets a new time base, ignored if <= 0.9
-     * @return The time base unit of the .smr file.
+     * Returns the last time value for this channel in clock ticks.
+      * @param fh The file descriptor for the .smr file
+     * @param chan The number of the channel (counting starts with 0). 
+     * @return The last time value for the channel.
      */
-    private double SONTimeBase(double newTimeBase){
-        return INSTANCE.SONTimeBase(this.fileHandle, newTimeBase);
+    private long SONChanMaxTime(short fh, int chan){
+        return INSTANCE.SONChanMaxTime(fh, chan).longValue();
     }
     
     /**
-     * This function returns the file clock tick interval in base time units as defined by 
-     * SONTimeBase()
-     * @param fh File descriptor for the .smr file.
-     * @return The number of base time units in the clock tick interval.
+     * This function reads contiguous waveform data from the given channel 
+     * between two set times.
+     * @param chan The channel number (counting starts with 0).
+     * @param max The maximum number of data point to be returned
+     * @param sTime The strat time in clock ticks.
+     * @param eTime The end time in clock ticks.
+     * @return A 2d double array where [0][n] represents the x value (time)
+     *         and [1][n] represents the y value (data) of the nth data point.
      */
-    private short SONGetusPerTime(short fh){
-        return INSTANCE.SONGetusPerTime(fh);
-    }
+     public double[][] SONGetRealData(short chan, long max, long sTime, long eTime){
+         //allocate 32bits(4bytes) for each data point
+        Memory pFloatMem = new Memory(max*4);
+        pFloatMem.clear();
+        //allocate 4bytes for the first returned time
+        Memory pbTimeMem = new Memory(4);
+        pbTimeMem.clear();
+        //convert Java long type to NativeLong, so that jna can take care
+        //of appropriate mapping to  C native long type
+        NativeLong maxNL = new NativeLong(max);
+        NativeLong sTimeNL = new NativeLong(sTime);
+        NativeLong eTiemeNL = new NativeLong(eTime);
+        
+        NativeLong numberOfDataPointsNL = INSTANCE.SONGetRealData(this.fileHandle,
+                chan, pFloatMem, maxNL, sTimeNL, eTiemeNL, pbTimeMem, null);
+        //convert NativeLong type back to Java long
+        long pbTime = pbTimeMem.getInt((long)0);
+        long numberOfDataPoints = numberOfDataPointsNL.longValue();
+        long channelDivide = this.channels[chan].getChannelDivide();
+        //calculate the base unit of the x axis scale, every x value is a
+        //multiple of this value
+        double timePerConversion = channelDivide*this.timeBase*this.usPerTime;
+        double[][] data = new double[2][(int)numberOfDataPoints];
+        for(int i=0;i<numberOfDataPoints;i++){
+            double time = timePerConversion*i;
+            float dataValue = pFloatMem.getFloat((long)4*i);
+            data[0][i] = time;
+            data[1][i] = (double)dataValue;
+        }
+        return data;
+     }
     
     
     //*******************Getter methodes for the private fields*****************
