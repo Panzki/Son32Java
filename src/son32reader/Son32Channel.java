@@ -5,6 +5,8 @@
  */
 package son32reader;
 
+import son32exceptions.*;
+
 import java.util.HashMap; 
 import java.util.Map; 
 
@@ -82,6 +84,7 @@ public class Son32Channel {
     private final ChannelKind channelKind;
     private final long channelDivide;
     private final long chanMaxTime;
+    public final int numberOfEpochs;
     
     public Son32Channel(Son32Reader reader, int channelNumber,
             short channelKind, long chanDiv, long chanMaxTime){
@@ -90,6 +93,40 @@ public class Son32Channel {
         this.channelKind = ChannelKind.getByChannelCode(channelKind);
         this.channelDivide = chanDiv;
         this.chanMaxTime = chanMaxTime;
+        /*calculate the number of 30 second epochs for this channel
+        *each channel contains at least one epoch, even though it has
+        *data for less than 30 seconds
+        */
+        this.numberOfEpochs = (int)Math.ceil((this.parentReader.getTimeBase()
+                *this.parentReader.getUsPerTime()*this.chanMaxTime)/30);
+    }
+    
+    /**
+    * This function reads contiguous waveform data from this channel 
+     * between two set times.
+     * @param max The maximum number of data point to be returned
+     * @param sTime The strat time in clock ticks.
+     * @param eTime The end time in clock ticks.
+     * @return A 2d double array where [0][n] represents the x value (time)
+     *         and [1][n] represents the y value (data) of the nth data point.
+     */
+    public double[][] getRealData(long max, long sTime, long eTime){
+        return this.parentReader.SONGetRealData((short)this.channelNumber, max,
+                sTime, eTime);
+    }
+    
+    public double[][] getEpoch(int epochNumber) 
+            throws son32Exceptions.NoEpochException{
+        if(epochNumber < 1 || epochNumber > this.numberOfEpochs){
+            throw new son32Exceptions.NoEpochException(this.channelNumber,
+                    epochNumber);
+        }
+        double timePerConversion = channelDivide*this.parentReader.getTimeBase()
+                *this.parentReader.getUsPerTime();
+        long max = (long)Math.ceil(30/timePerConversion);
+        System.out.println(this.parentReader.getTimeBase()
+                *this.parentReader.getUsPerTime());
+        return new double[1][1];
     }
     
     /**
@@ -105,20 +142,6 @@ public class Son32Channel {
      */
     public long getChannelDivide(){
         return this.channelDivide;
-    }
-    
-    /**
-    * This function reads contiguous waveform data from this channel 
-     * between two set times.
-     * @param max The maximum number of data point to be returned
-     * @param sTime The strat time in clock ticks.
-     * @param eTime The end time in clock ticks.
-     * @return A 2d double array where [0][n] represents the x value (time)
-     *         and [1][n] represents the y value (data) of the nth data point.
-     */
-    public double[][] getRealData(long max, long sTime, long eTime){
-        return this.parentReader.SONGetRealData((short)this.channelNumber, max,
-                sTime, eTime);
     }
     
     /**

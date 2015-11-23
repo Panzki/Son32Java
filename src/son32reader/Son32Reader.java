@@ -39,9 +39,9 @@ public final class Son32Reader {
         }
         this.numberOfChannels = this.SONMaxChans();
         this.channels = new Son32Channel[this.numberOfChannels];
-        this.initializeAllChannels();
         this.timeBase = this.SONTimeBase(0.0);
         this.usPerTime = this.SONGetusPerTime(this.fileHandle);
+        this.initializeAllChannels();
     }
     
     /**

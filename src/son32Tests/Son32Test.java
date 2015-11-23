@@ -16,12 +16,21 @@ import son32Exceptions.*;
  */
 public class Son32Test {
     public static void main(String args[]){
-        String path = "C:\\Users\\matthias\\Documents\\NetBeansProjects\\Son32Reader\\test_data\\sample.smr";
-        //String path = "C:\\Users\\matthias\\Documents\\NetBeansProjects\\Son32Reader\\test_data\\chan1_1sec.smr";
+        //String path = "C:\\Users\\matthias\\Documents\\NetBeansProjects\\Son32Reader\\test_data\\sample.smr";
+        String path = "C:\\Users\\matthias\\Documents\\NetBeansProjects\\Son32Reader\\test_data\\chan1_1sec.smr";
         Son32Reader reader = new Son32Reader(path, 1);
-        long   duration = timeEpochLoading(reader);
-  
-        System.out.format("It took on average %d ms to fetch ~30sec of data.%n",duration);
+        timeEpochLoading(reader);
+        //System.exit(0);
+        try{
+            Son32Channel chan = reader.getChannel(0);
+            chan.getEpoch(1);
+            chan.getEpoch(chan.numberOfEpochs);
+        } catch(Exception e){
+            System.out.println(e);
+        }
+      
+//        long  duration = timeEpochLoading(reader);
+//        System.out.format("It took %d ms to fetch ~30sec of data.%n",duration);
     }
     
     public static void printAllChannleKinds(Son32Reader reader){
@@ -49,10 +58,10 @@ public class Son32Test {
             //one waveform conversion takes about 0.004915s for this test file
             //the fetch ~30s we need to get 6106 data points
             //double[][] channel0Data = channel.getRealData(6106,0,channel.getChanMaxTime());
-            double[][] channel0Data = channel.getRealData(6106,0,30*37000);
+            double[][] channel0Data = channel.getRealData(10000,0,6106);
             long eTime = System.nanoTime();
             long duration = (eTime - sTime)/1000000;
-            //printChannelData(channel0Data);
+            printChannelData(channel0Data);
             return duration;
             //System.out.format("It took %d ms to fetch ~30sec of data.%n",duration);
         } catch(NoChannelException ex){
