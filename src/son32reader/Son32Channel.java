@@ -104,6 +104,21 @@ public class Son32Channel {
     }
     
     /**
+     * This methode will calculate the size of an array that can be filled with
+     * all data point from the given intervall. The intervall is given in sconds
+     * @param intervall The duration of the time intervall
+     * @return The optimal array size.
+     */
+    public int calculateArraySizeByTime(long intervall){
+        double timePerConversion = channelDivide
+                *this.parentReader.getTimeBase()
+                *this.parentReader.getUsPerTime();
+        //subtract 1 to make sure to stay in the intervall even tough we may
+        //round up
+        return (int)Math.ceil(intervall/timePerConversion) - 1;
+    }
+    
+    /**
     * This function reads contiguous waveform data from this channel. It is
     * supposed to be used intern and workf with clock tick as time unit.
      * between two set times.
@@ -118,23 +133,37 @@ public class Son32Channel {
     }
     
     /**
-     * Get data for this channel form the .smr file. The return will contain 
-     * the given number of data points.
-     * @param max Number of data points to be returned
+     * Get data for this channel form the .smr file. No data after sTime in
+     * seconds will be returned. The number of data points returned is equal
+     * to the length of the target array, which will be compltly filled.
      * @param sTime No data before this starting time in second will be returned.
      * @param target The target array for the data.
      */
-    public void getRealDataByDP(long max, long sTime, double target[]){}
+    public void getRealDataByDP(long sTime, double target[]){
+        long sTimeInCT = this.parentReader.getCTFromSec(sTime);
+        double timePerConversionInSec = channelDivide
+                *this.parentReader.getTimeBase()
+                *this.parentReader.getUsPerTime();
+        long eTimeInCT = sTimeInCT + 
+                this.parentReader.getCTFromSec(timePerConversionInSec*target.length);
+        this.getRealData(target.length, sTimeInCT, eTimeInCT, target);
+        
+    }
     
     /**
      * Get data for this channel from the .smr file. All data from the given 
      * time intervall will be returned. Make sure the traget array can store
-     * all data points.
+     * all data points. The methode will fetch as much data point, as the
+     * array can store.
      * @param sTime The start time of the intervall.
      * @param eTime The end time of the intervall.
      * @param target The target array for the data.
      */
-    public void getRealDataByTime(long sTime, long eTime, double[] target){}
+    public void getRealDataByTime(long sTime, long eTime, double[] target){
+        long sTimeInCT = this.parentReader.getCTFromSec(sTime);
+        long eTimeInCT = this.parentReader.getCTFromSec(eTime);
+        this.getRealData(target.length, sTimeInCT, eTimeInCT, target);
+    }
     
     /**
      * Get the enum object that decribes the kind of this channel.

@@ -18,15 +18,14 @@ public class Son32Test {
     public static void main(String args[]){
         //String path = "C:\\Users\\matthias\\Documents\\NetBeansProjects\\Son32Reader\\test_data\\sample.smr";
         String path = "C:\\Users\\matthias\\Documents\\NetBeansProjects\\Son32Reader\\test_data\\chan1_1sec.smr";
-        Son32Reader reader = new Son32Reader(path, 1);     
-        System.out.println("Clock tick periode: " + (reader.getTimeBase()*reader.getUsPerTime()));
+        Son32Reader reader = new Son32Reader(path, 1);
+
         try{
             Son32Channel chan = reader.getChannel(0);
-            System.out.println("chan 0 max time: " + chan.getChanMaxTime());
-            System.out.println("Expected ct: " + (int)(1/(reader.getTimeBase()*reader.getUsPerTime())));
-            System.out.println("Time in s based on ct: " + (chan.getChanMaxTime())*(reader.getTimeBase()*reader.getUsPerTime()));
-            System.out.println("Sampling rate: " + chan.samplingRateHz);
-            System.out.println("Sampling intervall: " + chan.samplingIntervallMs);
+            double[] targetByTime = new double[chan.calculateArraySizeByTime(1)];
+            double[] targetByDP = new double[chan.calculateArraySizeByTime(1)];
+            chan.getRealDataByTime(0, 1, targetByTime);
+            chan.getRealDataByDP(0, targetByDP);
         } catch(Exception e){
             System.out.println(e);
         }
@@ -52,21 +51,21 @@ public class Son32Test {
         }
     }
     
-    public static long timeEpochLoading(Son32Reader reader, boolean print){
+    public static double timeRealDataLoading(Son32Reader reader, long intervall, 
+            boolean print){
         try{
             Son32Channel channel = reader.getChannel(0);
+            double[] target = new double[channel.calculateArraySizeByTime(1)];
             long sTime = System.nanoTime();
-            //one waveform conversion takes about 0.004915s for this test file
-            //the fetch ~30s we need to get 6106 data points
-            //double[][] channel0Data = channel.getRealData(6106,0,channel.getChanMaxTime());
-            double[] target = new double[6106];
-            //channel.getRealData(6106,0,channel.getChanMaxTime(), target);
+            channel.getRealDataByTime(0, intervall, target);
             long eTime = System.nanoTime();
-            long duration = (eTime - sTime)/1000000;
+            //time is in s 1e-9 divide by 1e3 => 1e-6
+            double duration = (eTime - sTime)/1000;
             if(print){
                 printChannelData(target);
             }
-            System.out.format("It took %d ms to fetch one epoch.%n",duration);
+            System.out.format("It took %f2 us to fetch one data for "
+                    + "%d seconds.%n",duration, intervall);
             return duration;
         } catch(NoChannelException ex){
             System.out.println(ex);
