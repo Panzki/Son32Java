@@ -5,8 +5,6 @@
  */
 package son32reader;
 
-import son32exceptions.*;
-
 import java.util.HashMap; 
 import java.util.Map; 
 
@@ -84,7 +82,9 @@ public class Son32Channel {
     private final ChannelKind channelKind;
     private final long channelDivide;
     private final long chanMaxTime;
-    public final int numberOfEpochs;
+    //the time between two data point in 1e-6 sec
+    public final double samplingIntervallMs;
+    public final double samplingRateHz;
     
     public Son32Channel(Son32Reader reader, int channelNumber,
             short channelKind, long chanDiv, long chanMaxTime){
@@ -97,37 +97,44 @@ public class Son32Channel {
         *each channel contains at least one epoch, even though it has
         *data for less than 30 seconds
         */
-        this.numberOfEpochs = (int)Math.ceil((this.parentReader.getTimeBase()
-                *this.parentReader.getUsPerTime()*this.chanMaxTime)/30);
+        this.samplingIntervallMs = this.parentReader.getUsPerTime()*1e6
+                *this.parentReader.getTimeBase();
+        this.samplingRateHz = 1/(this.channelDivide*1e-6*
+                this.samplingIntervallMs);
     }
     
     /**
-    * This function reads contiguous waveform data from this channel 
+    * This function reads contiguous waveform data from this channel. It is
+    * supposed to be used intern and workf with clock tick as time unit.
      * between two set times.
      * @param max The maximum number of data point to be returned
      * @param sTime The strat time in clock ticks.
      * @param eTime The end time in clock ticks.
-     * @return A 2d double array where [0][n] represents the x value (time)
-     *         and [1][n] represents the y value (data) of the nth data point.
+     * @param target he target array for the data.
      */
-    public double[][] getRealData(long max, long sTime, long eTime){
-        return this.parentReader.SONGetRealData((short)this.channelNumber, max,
-                sTime, eTime);
+    private void getRealData(long max, long sTime, long eTime, double[] target){
+        this.parentReader.SONGetRealData((short)this.channelNumber, max,
+                sTime, eTime, target);
     }
     
-    public double[][] getEpoch(int epochNumber) 
-            throws son32Exceptions.NoEpochException{
-        if(epochNumber < 1 || epochNumber > this.numberOfEpochs){
-            throw new son32Exceptions.NoEpochException(this.channelNumber,
-                    epochNumber);
-        }
-        double timePerConversion = channelDivide*this.parentReader.getTimeBase()
-                *this.parentReader.getUsPerTime();
-        long max = (long)Math.ceil(30/timePerConversion);
-        System.out.println(this.parentReader.getTimeBase()
-                *this.parentReader.getUsPerTime());
-        return new double[1][1];
-    }
+    /**
+     * Get data for this channel form the .smr file. The return will contain 
+     * the given number of data points.
+     * @param max Number of data points to be returned
+     * @param sTime No data before this starting time in second will be returned.
+     * @param target The target array for the data.
+     */
+    public void getRealDataByDP(long max, long sTime, double target[]){}
+    
+    /**
+     * Get data for this channel from the .smr file. All data from the given 
+     * time intervall will be returned. Make sure the traget array can store
+     * all data points.
+     * @param sTime The start time of the intervall.
+     * @param eTime The end time of the intervall.
+     * @param target The target array for the data.
+     */
+    public void getRealDataByTime(long sTime, long eTime, double[] target){}
     
     /**
      * Get the enum object that decribes the kind of this channel.
@@ -150,4 +157,39 @@ public class Son32Channel {
     public long getChanMaxTime(){
         return this.chanMaxTime;
     }
+    
+    /**
+     * @return The sampling intervall im ms
+     */
+    public double getSamplingIntervallMs(){
+        return this.samplingIntervallMs;
+    }
+    /**
+     * @return The sampling rate for this channel in Hz
+     */
+    public double getSamplingRateHz(){
+        return this.samplingRateHz;
+    }    
 }
+
+/**
+ * Some more code that is not used atm, but could be usefull
+ * 
+ * this.numberOfEpochs = (int)Math.ceil((this.parentReader.getTimeBase()
+                *this.parentReader.getUsPerTime()*this.chanMaxTime)/30);
+                * 
+
+    public double[][] getEpoch(int epochNumber) 
+            throws son32Exceptions.NoEpochException{
+        if(epochNumber < 1 || epochNumber > this.numberOfEpochs){
+            throw new son32Exceptions.NoEpochException(this.channelNumber,
+                    epochNumber);
+        }
+        double timePerConversion = channelDivide*this.parentReader.getTimeBase()
+                *this.parentReader.getUsPerTime();
+        long max = (long)Math.ceil(30/timePerConversion);
+* 
+//   *this.parentReader.getUsPerTime());
+        return new double[1][1];
+    }
+ */

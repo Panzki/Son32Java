@@ -9,6 +9,7 @@ import son32Exceptions.*;
 
 import com.sun.jna.Memory;
 import com.sun.jna.NativeLong;
+import java.lang.ArrayIndexOutOfBoundsException;
 
 
 /**
@@ -150,10 +151,16 @@ public final class Son32Reader {
      * @param max The maximum number of data point to be returned
      * @param sTime The strat time in clock ticks.
      * @param eTime The end time in clock ticks.
-     * @return A 2d double array where [0][n] represents the x value (time)
-     *         and [1][n] represents the y value (data) of the nth data point.
+     * @param target The target array for the data
      */
-     public double[][] SONGetRealData(short chan, long max, long sTime, long eTime){
+     public void SONGetRealData(short chan, long max, long sTime,
+             long eTime, double[] target) throws ArrayIndexOutOfBoundsException{
+        if(target.length < max){
+            throw new ArrayIndexOutOfBoundsException("Error reading data from"
+                    + " the file into the target array! Make sure the array"
+                    + " length is at least equal to the number of data points"
+                    + " you want to get!");
+        }
          //allocate 32bits(4bytes) for each data point
         Memory pFloatMem = new Memory(max*4);
         pFloatMem.clear();
@@ -175,18 +182,29 @@ public final class Son32Reader {
         //calculate the base unit of the x axis scale, every x value is a
         //multiple of this value
         double timePerConversion = channelDivide*this.timeBase*this.usPerTime;
-        double[][] data = new double[2][(int)numberOfDataPoints];
         for(int i=0;i<numberOfDataPoints;i++){
             double time = timePerConversion*i;
             float dataValue = pFloatMem.getFloat((long)4*i);
-            data[0][i] = time;
-            data[1][i] = (double)dataValue;
+            target[i] = (double)dataValue;
         }
-        return data;
      }
     
+    //***********************converter methodes*********************/
+   
+    /**
+     * Calculate the time in clock ticks from a time given in seconds
+     * @param timeInSec
+     * @return The time in clock ticks
+     */
+    public long getCTFromSec(double timeInSec){
+        return (long)(timeInSec/(this.timeBase*this.usPerTime));
+    } 
     
-    //*******************Getter methodes for the private fields*****************
+    public double getSecFromCT(long timeInCT){
+        return (double)(timeInCT*this.timeBase*this.usPerTime);
+    }
+    //*******************Getter methodes for the private fields****/
+   
     /**
      * @return The number of channels for the Son32Reader instance.
      */
