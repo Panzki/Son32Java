@@ -113,9 +113,8 @@ public class Son32Channel {
         double timePerConversion = channelDivide
                 *this.parentReader.getTimeBase()
                 *this.parentReader.getUsPerTime();
-        //subtract 1 to make sure to stay in the intervall even tough we may
-        //round up
-        return (int)Math.ceil(intervall/timePerConversion) - 1;
+        //make sure to stay IN the intervall
+        return (int)Math.floor(intervall/timePerConversion);
     }
     
     /**

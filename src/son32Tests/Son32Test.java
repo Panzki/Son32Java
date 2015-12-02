@@ -59,7 +59,7 @@ public class Son32Test {
             long sTime = System.nanoTime();
             channel.getRealDataByTime(0, intervall, target);
             long eTime = System.nanoTime();
-            //time is in s 1e-9 divide by 1e3 => 1e-6
+            //time is in s 1e-9 divide by 1e-3 => 1e-6
             double duration = (eTime - sTime)/1000;
             if(print){
                 printChannelData(target);

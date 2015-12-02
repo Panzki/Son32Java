@@ -34,6 +34,14 @@ public interface Son32JavaInterface extends Library{
     short SONOpenOldFile(String path, int mode);
     
     /**
+     * Returns the version of the opened .smr file.  The function returns the
+     * file version of -1 if no file is open. 
+     * @param fh The file handle to the .smr file
+     * @return Verion of the .smr file
+     */
+    int SONGetVersion(short fh);
+    
+    /**
      * Returns the number of channels for the .smf file. This can be between
      * 32 and 451.
      * @param fh The file handle to the .smr file

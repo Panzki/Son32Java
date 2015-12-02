@@ -84,6 +84,25 @@ public final class Son32Reader {
         return fh;
     }
     
+     /**
+     * Returns the version of the opened .smr file.
+     * @param fh The file handle to the .smr file
+     * @return Verion of the .smr file
+     * @throws SonNoFileException
+     */
+    private int SONGetVersion(short fh) throws SonNoFileException{
+        if(fh < 0){
+            throw new SonNoFileException("");
+        }
+        int version = INSTANCE.SONGetVersion(fh);
+        if(version == -1){
+            throw new SonNoFileException("");
+        }
+        else{
+            return version;
+        }
+    }
+    
     /**
      * Returns the number of chancels for this .smr file.
      * @return maxChannels The number of channels for the .smr file.
