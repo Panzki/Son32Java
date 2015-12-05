@@ -5,6 +5,8 @@
  */
 package son32Tests;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import son32reader.Son32Reader;
 import son32reader.Son32Channel;
 import son32Exceptions.*;
@@ -16,9 +18,11 @@ import son32Exceptions.*;
  */
 public class Son32Test {
     public static void main(String args[]){
-        //String path = "C:\\Users\\matthias\\Documents\\NetBeansProjects\\Son32Reader\\test_data\\sample.smr";
-        String path = "C:\\Users\\matthias\\Documents\\NetBeansProjects\\Son32Reader\\test_data\\chan1_1sec.smr";
-        Son32Reader reader = new Son32Reader(path, 1);
+        //String path = System.getProperty("user.dir") + "\\test_data\\chan1_1sec.smr";
+        String path = System.getProperty("user.dir") + "\\test_data\\sample01_chan01.smr";
+        Son32Reader reader = new Son32Reader(path, 2);
+        reader.SONCloseFile();
+        System.exit(0);
 
         try{
             Son32Channel chan = reader.getChannel(0);
@@ -26,6 +30,7 @@ public class Son32Test {
             double[] targetByDP = new double[chan.calculateArraySizeByTime(1)];
             chan.getRealDataByTime(0, 1, targetByTime);
             chan.getRealDataByDP(0, targetByDP);
+            reader.SONCloseFile();
         } catch(Exception e){
             System.out.println(e);
         }

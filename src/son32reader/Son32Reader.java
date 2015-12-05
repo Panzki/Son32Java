@@ -32,12 +32,12 @@ public final class Son32Reader {
     public Son32Reader(String path, int mode){
         try{
             this.fileHandle = this.SONOpenOldFile(path, mode);
-            
         } catch(SonNoFileException|SonOutOfMemoryException|SonNoAccessException
                 |SonReadOnlyException ex){
            System.out.println(ex);
            System.exit(1);
         }
+        //System.out.println("FH: "+this.fileHandle);
         this.numberOfChannels = this.SONMaxChans();
         this.channels = new Son32Channel[this.numberOfChannels];
         this.timeBase = this.SONTimeBase(0.0);
@@ -74,7 +74,7 @@ public final class Son32Reader {
     private short SONOpenOldFile(String path, int mode) throws SonNoFileException,
             SonOutOfMemoryException, SonNoAccessException, SonReadOnlyException{
         short fh = INSTANCE.SONOpenOldFile(path, mode);
-        
+        System.out.println(fh);
         switch(fh){
             case -1: throw new SonNoFileException(path);
             case -4: throw new SonNoAccessException(path);
@@ -82,6 +82,11 @@ public final class Son32Reader {
             case -21: throw new SonReadOnlyException(path);
         }
         return fh;
+    }
+    
+    // SON_NO_FILE SON_BAD_READ SON_BAD_WRITE
+    public void SONCloseFile(){
+        INSTANCE.SONCloseFile(this.fileHandle);
     }
     
      /**

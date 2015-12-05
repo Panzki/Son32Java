@@ -34,6 +34,15 @@ public interface Son32JavaInterface extends Library{
     short SONOpenOldFile(String path, int mode);
     
     /**
+     * This function is used to close a file that has been opened for
+     * reading or for writing
+     * @param fh The file handle
+     * @return  The function returns 0 if all went well or an error code if
+     * the file close operation failed. 
+     */
+    short SONCloseFile(short fh);
+    
+    /**
      * Returns the version of the opened .smr file.  The function returns the
      * file version of -1 if no file is open. 
      * @param fh The file handle to the .smr file
