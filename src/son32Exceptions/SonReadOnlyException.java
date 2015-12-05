@@ -14,7 +14,7 @@ public class SonReadOnlyException extends Exception {
     
     public SonReadOnlyException(String path){
         super("Attempt to write to a file in read only mode! File: " + path + 
-                " Make sure no other programms access this file at the same "
-                + "time");
+                " Make sure no other programms is accessing this file at the"
+                + "same time and that the file exists!");
     }
 }

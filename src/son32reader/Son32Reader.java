@@ -74,7 +74,6 @@ public final class Son32Reader {
     private short SONOpenOldFile(String path, int mode) throws SonNoFileException,
             SonOutOfMemoryException, SonNoAccessException, SonReadOnlyException{
         short fh = INSTANCE.SONOpenOldFile(path, mode);
-        System.out.println(fh);
         switch(fh){
             case -1: throw new SonNoFileException(path);
             case -4: throw new SonNoAccessException(path);

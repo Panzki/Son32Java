@@ -19,10 +19,20 @@ import son32Exceptions.*;
 public class Son32Test {
     public static void main(String args[]){
         //String path = System.getProperty("user.dir") + "\\test_data\\chan1_1sec.smr";
-        String path = System.getProperty("user.dir") + "\\test_data\\sample01_chan01.smr";
+        String path = System.getProperty("user.dir") + "\\test_data\\sample01.smr";
         Son32Reader reader = new Son32Reader(path, 2);
+        try{
+            Son32Channel channel = reader.getChannel(3);
+            int x = channel.calculateArraySizeByTime(0.01);
+            double[] target = new double[x];
+            channel.getRealDataByTime(30, 30.01, target);
+            for(int i=0;i<x;i++){
+                System.out.println(target[i]);
+            }            
+        } catch(Exception e){
+            System.out.println(e);
+        }
         reader.SONCloseFile();
-        System.exit(0);
 
         try{
             Son32Channel chan = reader.getChannel(0);

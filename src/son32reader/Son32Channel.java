@@ -109,7 +109,7 @@ public class Son32Channel {
      * @param intervall The duration of the time intervall
      * @return The optimal array size.
      */
-    public int calculateArraySizeByTime(long intervall){
+    public int calculateArraySizeByTime(double intervall){
         double timePerConversion = channelDivide
                 *this.parentReader.getTimeBase()
                 *this.parentReader.getUsPerTime();
@@ -138,7 +138,7 @@ public class Son32Channel {
      * @param sTime No data before this starting time in second will be returned.
      * @param target The target array for the data.
      */
-    public void getRealDataByDP(long sTime, double target[]){
+    public void getRealDataByDP(double sTime, double target[]){
         long sTimeInCT = this.parentReader.getCTFromSec(sTime);
         double timePerConversionInSec = channelDivide
                 *this.parentReader.getTimeBase()
@@ -158,7 +158,7 @@ public class Son32Channel {
      * @param eTime The end time of the intervall.
      * @param target The target array for the data.
      */
-    public void getRealDataByTime(long sTime, long eTime, double[] target){
+    public void getRealDataByTime(double sTime, double eTime, double[] target){
         long sTimeInCT = this.parentReader.getCTFromSec(sTime);
         long eTimeInCT = this.parentReader.getCTFromSec(eTime);
         this.getRealData(target.length, sTimeInCT, eTimeInCT, target);
