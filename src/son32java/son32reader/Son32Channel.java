@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package son32reader;
+package son32java.son32reader;
 
 import java.util.HashMap; 
 import java.util.Map; 

@@ -11,7 +11,10 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import son32Exceptions.*;
+
+import son32java.son32Exceptions.*;
+import son32java.son32reader.Son32Reader;
+import son32java.son32reader.Son32Channel;
 
 /**
  *

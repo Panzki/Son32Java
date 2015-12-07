@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package son32reader;
+package son32java.son32reader;
 
-import son32Exceptions.*;
+import son32java.son32Exceptions.*;
 
 import com.sun.jna.Memory;
 import com.sun.jna.NativeLong;

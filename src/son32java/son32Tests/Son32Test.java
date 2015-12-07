@@ -3,13 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package son32Tests;
+package son32java.son32Tests;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import son32reader.Son32Reader;
-import son32reader.Son32Channel;
-import son32Exceptions.*;
+import son32java.son32reader.Son32Reader;
+import son32java.son32reader.Son32Channel;
+import son32java.son32Exceptions.*;
 
 /**
  * Atm, this is the place for simple manual unit and implemenation test.
@@ -82,7 +82,7 @@ public class Son32Test {
             System.out.format("It took %f2 us to fetch one data for "
                     + "%d seconds.%n",duration, intervall);
             return duration;
-        } catch(NoChannelException ex){
+        } catch(Exception ex){
             System.out.println(ex);
             System.exit(1);
             return 0;
