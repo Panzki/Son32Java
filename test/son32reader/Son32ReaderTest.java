@@ -146,5 +146,31 @@ public class Son32ReaderTest {
             System.out.println(e);
             fail();
         } 
-    }  
+    }
+    
+    @Test
+    public void testSample00Channel2getChannelTitle(){
+        try{
+            Son32Channel channel = this.file00.getChannel(2);
+            String title = channel.getChannelTitle();
+            String expected = "EEG1_1";
+            assertEquals(expected, title);
+        } catch(NoChannelException e){
+            System.out.println(e);
+            fail();
+        }
+    }
+    
+    @Test
+    public void testSample01Channel5getChannelTitle(){
+        try{
+            Son32Channel channel = this.file01.getChannel(5);
+            String title = channel.getChannelTitle();
+            String expected = "EMG";
+            assertEquals(expected, title);
+        } catch(NoChannelException e){
+            System.out.println(e);
+            fail();
+        }
+    }
 }

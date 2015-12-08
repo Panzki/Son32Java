@@ -21,7 +21,7 @@ import java.lang.ArrayIndexOutOfBoundsException;
  * error codes and throw the corresponding java exceptions.
  * @author Matthias steffen
  */
-public final class Son32Reader {
+public class Son32Reader {
     private final static Son32JavaInterface INSTANCE = Son32JavaInterface.INSTANCE;
     private short fileHandle;
     private final Son32Channel[] channels;
@@ -54,10 +54,11 @@ public final class Son32Reader {
     private void initializeAllChannels(){
         for(int i=0;i<this.numberOfChannels;i++){
             short chanKind = this.SONChanKind((short)i);
+            String title = this.SONGetChanTitle(this.fileHandle, (short)i);
             long chanDiv = this.SONChanDivide(this.fileHandle, (short)i);
             long chanMaxTime = this.SONChanMaxTime(this.fileHandle,(short) i);
-            this.channels[i] = new Son32Channel(this, i, chanKind, chanDiv,
-                    chanMaxTime);
+            this.channels[i] = new Son32Channel(this, i, chanKind, title,
+                    chanDiv, chanMaxTime);
         }
     }
     
@@ -141,6 +142,22 @@ public final class Son32Reader {
      */
     private short SONChanKind(short chan){
         return INSTANCE.SONChanKind(this.fileHandle, chan);
+    }
+    
+    /**
+     * Get the title of the given channel.
+     * @param fh The file handle to the .smr file.
+     * @param chan The number of the channel (counting starts with 0).
+     * @return The channel title
+     */
+    private String SONGetChanTitle(short fh, short chan){
+        //allocate 10 bytes for the char array, the constant (maximum)
+        //SON_TITLESZ is 9 allocate 1 additional byte for the c specific
+        //string terminator \0
+        Memory pcTitle = new Memory(10);
+        INSTANCE.SONGetChanTitle(this.fileHandle, chan, pcTitle);
+        String title = pcTitle.getString((long)0);
+        return title;
     }
     
     /**

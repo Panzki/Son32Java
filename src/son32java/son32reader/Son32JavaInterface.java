@@ -96,6 +96,14 @@ public interface Son32JavaInterface extends Library{
     short SONChanKind(short fh, short chan);
     
     /**
+     * This function will return the channel title for the given channel.
+     * @param fh The file handle to the .smr file.
+     * @param chan The number of the channel (counting starts with 0).
+     * @param pcTitle Pointer to a char array to hold the returned title
+     */
+    void SONGetChanTitle(short fh, short chan, Memory pcTitle);
+    
+    /**
      * Returns the last time value for this channel in clock ticks.
      * @param fh The file descriptor for the .smr file
      * @param chan The number of the channel (counting starts with 0). 
