@@ -57,8 +57,9 @@ public class Son32Reader {
             String title = this.SONGetChanTitle(this.fileHandle, (short)i);
             long chanDiv = this.SONChanDivide(this.fileHandle, (short)i);
             long chanMaxTime = this.SONChanMaxTime(this.fileHandle,(short) i);
+            int blocks = this.SONBlocks(this.fileHandle, (short)i);
             this.channels[i] = new Son32Channel(this, i, chanKind, title,
-                    chanDiv, chanMaxTime);
+                    chanDiv, chanMaxTime, blocks);
         }
     }
     
@@ -158,6 +159,17 @@ public class Son32Reader {
         INSTANCE.SONGetChanTitle(this.fileHandle, chan, pcTitle);
         String title = pcTitle.getString((long)0);
         return title;
+    }
+    
+    /**
+     * Returns the number of data blocks for the channel that are on disk or 0
+     * if any error
+     * @param fh The file handle to the .smr file.
+     * @param chan The number of the channel (counting starts with 0).
+     * @return The number of blocks for this channel
+     */
+    private int SONBlocks(short fh, short chan){
+        return INSTANCE.SONBlocks(fh, chan);
     }
     
     /**

@@ -83,22 +83,22 @@ public class Son32Channel {
     private final String title;
     private final long channelDivide;
     private final long chanMaxTime;
+    private final int blocks;
     //the time between two data point in 1e-6 sec
     public final double samplingIntervallMs;
     public final double samplingRateHz;
     
     public Son32Channel(Son32Reader reader, int channelNumber,
-            short channelKind, String title, long chanDiv, long chanMaxTime){
+            short channelKind, String title, long chanDiv, long chanMaxTime,
+            int blocks){
         this.parentReader = reader;
         this.channelNumber = channelNumber;
         this.channelKind = ChannelKind.getByChannelCode(channelKind);
         this.title = title;
         this.channelDivide = chanDiv;
         this.chanMaxTime = chanMaxTime;
-        /*calculate the number of 30 second epochs for this channel
-        *each channel contains at least one epoch, even though it has
-        *data for less than 30 seconds
-        */
+        this.blocks = blocks;
+
         this.samplingIntervallMs = this.parentReader.getUsPerTime()*1e6
                 *this.parentReader.getTimeBase();
         this.samplingRateHz = 1/(this.channelDivide*1e-6*
@@ -194,6 +194,14 @@ public class Son32Channel {
      */
     public long getChanMaxTime(){
         return this.chanMaxTime;
+    }
+    
+    /**
+     * Returns the number of blocks for this channel.
+     * @return 
+     */
+    public int getBlocks(){
+        return this.blocks;
     }
     
     /**

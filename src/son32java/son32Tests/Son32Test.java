@@ -23,7 +23,7 @@ public class Son32Test {
         Son32Reader reader = new Son32Reader(path, 2);
         try{
             Son32Channel channel = reader.getChannel(3);
-            System.out.println("Title: "+channel.getChannelTitle());
+            System.out.println("Blocks: "+channel.getBlocks());
             int x = channel.calculateArraySizeByTime(0.01);
             double[] target = new double[x];
             channel.getRealDataByTime(30, 30.01, target);

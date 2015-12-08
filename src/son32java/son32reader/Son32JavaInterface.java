@@ -104,6 +104,15 @@ public interface Son32JavaInterface extends Library{
     void SONGetChanTitle(short fh, short chan, Memory pcTitle);
     
     /**
+     * Returns the number of data blocks for the channel that are on disk or 0
+     * if any error
+     * @param fh The file handle to the .smr file.
+     * @param chan The number of the channel (counting starts with 0).
+     * @return The number of blocks for this channel
+     */
+    int SONBlocks(short fh, short chan);
+    
+    /**
      * Returns the last time value for this channel in clock ticks.
      * @param fh The file descriptor for the .smr file
      * @param chan The number of the channel (counting starts with 0). 
