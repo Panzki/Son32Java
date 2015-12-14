@@ -5,8 +5,6 @@
  */
 package son32java.son32Tests;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import son32java.son32reader.Son32Reader;
 import son32java.son32reader.Son32Channel;
 import son32java.son32Exceptions.*;

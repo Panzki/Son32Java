@@ -156,8 +156,8 @@ public class Son32Channel {
      * time intervall will be returned. Make sure the traget array can store
      * all data points. The methode will fetch as much data point, as the
      * array can store.
-     * @param sTime The start time of the intervall.
-     * @param eTime The end time of the intervall.
+     * @param sTime The start time of the intervall in sec.
+     * @param eTime The end time of the intervall in sec.
      * @param target The target array for the data.
      */
     public void getRealDataByTime(double sTime, double eTime, double[] target){
