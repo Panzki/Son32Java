@@ -62,7 +62,7 @@ public interface Son32JavaInterface extends Library{
      *  This function gets and/or sets the base time units for the file (default
      * is 1.0E-6 seconds).
      * @param fh The file handle to the .smr file
-     * @param dTB New value for the time base, ignored if <=0.0
+     * @param dTB New value for the time base, ignored if smaller or equal to 0.0
      * @return The base time unit of the .smr file.
      */
     double SONTimeBase(short fh, double dTB);
