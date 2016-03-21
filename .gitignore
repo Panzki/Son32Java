@@ -4,8 +4,8 @@
 test_data/
 nbproject/
 build/
-./build.xml
-./manifest.mf
+build.xml
+manifest.mf
 nbproject/
 
 *.class
